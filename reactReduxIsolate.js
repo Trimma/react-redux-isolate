@@ -2,15 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { connect, Provider } from 'react-redux';
 
 export function isolateDispatch(isolateState: Function, isolateAction: Function) {
-	return (dispatch: Function) => {
+	return (dispatch: Function, ownProps: ?Object) => {
 		const isolatedDispatch = action => {
 			if(typeof(action) === 'function') {
 				return dispatch((realDispatch, realGetState, ...extra) => {
-					return action(isolatedDispatch, () => isolateState(realGetState()), ...extra);
+					return action(isolatedDispatch, () => isolateState(realGetState(), ownProps), ...extra);
 				});
 				// Should probably add support for promises here
 			} else {
-				return dispatch(isolateAction(action));
+				return dispatch(isolateAction(action, ownProps));
 			}
 		};
 		return isolatedDispatch;
@@ -18,6 +18,7 @@ export function isolateDispatch(isolateState: Function, isolateAction: Function)
 }
 
 export function isolate(isolateState: Function, isolateAction: Function) {
+	const createDispatch = isolateDispatch(isolateState, isolateAction);
 	return ComponentToIsolate => {
 		class IsolatedComponent extends Component {
 			static propTypes = {
@@ -33,10 +34,10 @@ export function isolate(isolateState: Function, isolateAction: Function) {
 				this.listeners = [];
 				this.lastState = state;
 				this.currentIsolatedState = isolateState(state, ownProps);
+				this.currentisolatedDispatch = createDispatch(dispatch, ownProps);
 
 				const getIsolatedState = () => this.currentIsolatedState;
-
-				const isolatedDispatch = isolateDispatch(isolateState, isolateAction)(dispatch);
+				const isolatedDispatch = (...args) => this.currentisolatedDispatch(...args);
 
 				const localSubscribe = (listener: Function): Function => {
 					let isSubscribed = true;
@@ -66,6 +67,7 @@ export function isolate(isolateState: Function, isolateAction: Function) {
 					const { state, dispatch, ...ownProps } = props;
 					this.lastState = props.state;
 					this.currentIsolatedState = isolateState(state, ownProps);
+					this.currentisolatedDispatch = createDispatch(dispatch, ownProps);
 					this.updateListeners = true;
 				}
 			}
