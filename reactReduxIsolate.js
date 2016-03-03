@@ -1,24 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 import { connect, Provider } from 'react-redux';
 
-export function createSandboxedDispatch(mapState: Function, mapAction: Function) {
+export function isolateDispatch(isolateState: Function, isolateAction: Function) {
 	return (dispatch: Function) => {
-		const sandboxedDispatch = action => {
+		const isolatedDispatch = action => {
 			if(typeof(action) === 'function') {
 				return dispatch((realDispatch, realGetState, ...extra) => {
-					return action(sandboxedDispatch, () => mapState(realGetState()), ...extra);
+					return action(isolatedDispatch, () => isolateState(realGetState()), ...extra);
 				});
+				// Should probably add support for promises here
 			} else {
-				return dispatch(mapAction(action));
+				return dispatch(isolateAction(action));
 			}
 		};
-		return sandboxedDispatch;
+		return isolatedDispatch;
 	};
 }
 
-export function createReduxSandbox(mapSandboxedState: Function, mapSandboxedAction: Function) {
-	return (ComponentToSandbox) => {
-		class ReduxSandbox extends Component {
+export function isolate(isolateState: Function, isolateAction: Function) {
+	return ComponentToIsolate => {
+		class IsolatedComponent extends Component {
 			static propTypes = {
 				state: PropTypes.object.isRequired,
 				dispatch: PropTypes.func.isRequired
@@ -27,13 +28,15 @@ export function createReduxSandbox(mapSandboxedState: Function, mapSandboxedActi
 			constructor(props) {
 				super(props);
 
+				const { state, dispatch, ...ownProps } = props;
+
 				this.listeners = [];
-				this.lastState = props.state;
-				this.currentSandboxState = mapSandboxedState(props.state);
+				this.lastState = state;
+				this.currentIsolatedState = isolateState(state, ownProps);
 
-				const getSandboxState = () => this.currentSandboxState;
+				const getIsolatedState = () => this.currentIsolatedState;
 
-				const dispatchWithinSandbox = createSandboxedDispatch(mapSandboxedState, mapSandboxedAction)(props.dispatch);
+				const isolatedDispatch = isolateDispatch(isolateState, isolateAction)(dispatch);
 
 				const localSubscribe = (listener: Function): Function => {
 					let isSubscribed = true;
@@ -50,18 +53,19 @@ export function createReduxSandbox(mapSandboxedState: Function, mapSandboxedActi
 				};
 
 				// Our store proxy - matches a redux store minus
-				// replaceReducers, which we will not need
+				// replaceReducers, which we will not need anyway
 				this.proxyStore = {
-					getState: getSandboxState,
-					dispatch: dispatchWithinSandbox,
+					getState: getIsolatedState,
+					dispatch: isolatedDispatch,
 					subscribe: localSubscribe
 				};
 			}
 
 			componentWillReceiveProps(props) {
 				if(props.state !== this.lastState) {
+					const { state, dispatch, ...ownProps } = props;
 					this.lastState = props.state;
-					this.currentSandboxState = mapSandboxedState(props.state);
+					this.currentIsolatedState = isolateState(state, ownProps);
 					this.updateListeners = true;
 				}
 			}
@@ -74,17 +78,17 @@ export function createReduxSandbox(mapSandboxedState: Function, mapSandboxedActi
 			}
 
 			render() {
-				const { state, dispatch, ...props } = this.props;
+				const { state, dispatch, ...ownProps } = this.props;
 				return (
 					<Provider store={this.proxyStore}>
-						<ComponentToSandbox {...props} />
+						<ComponentToIsolate {...ownProps} />
 					</Provider>
 				);
 			}
 		}
 
-		const displayName = ComponentToSandbox.displayName || ComponentToSandbox.name || 'Component';
-		ReduxSandbox.displayName = `ReduxSandbox(${displayName})`;
-		return connect(state => ({ state }))(ReduxSandbox);
+		const displayName = ComponentToIsolate.displayName || ComponentToIsolate.name || 'Component';
+		IsolatedComponent.displayName = `IsolatedComponent(${displayName})`;
+		return connect(state => ({ state }))(IsolatedComponent);
 	};
 }
