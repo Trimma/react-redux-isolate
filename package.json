@@ -4,7 +4,7 @@
   "description": "Isolate Redux apps to sandboxed state subtrees",
   "homepage": "https://github.com/Trimma/react-redux-isolate",
   "author": "Trimma AB",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "jsnext:main": "es/index.js",
   "files": [
     "lib",
