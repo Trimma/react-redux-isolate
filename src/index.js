@@ -3,20 +3,23 @@ import React, { Component, PropTypes } from 'react';
 import { connect, Provider } from 'react-redux';
 
 export function isolateDispatch(isolateState: Function, isolateAction: Function) {
-	invariant(typeof(isolateState) !== 'function',
+	invariant(typeof(isolateState) === 'function',
 		'The first argument of isolateDispatch must be a function that selects an isolated subtree'
 	);
-	invariant(typeof(isolateAction) !== 'function',
+	invariant(typeof(isolateAction) === 'function',
 		'The second argument of isolateDispatch must be a function that creates a wrapping action for the isolation reducer'
 	);
 
 	return (dispatch: Function, ownProps: ?Object) => {
-		invariant(typeof(dispatch) !== 'function',
-			'dispatch must be a function. Are you trying to execute a thunk without redux-thunk?'
+		invariant(typeof(dispatch) === 'function',
+			'the isolated dispatch creator must be called with the dispatch function to create an isolated dispatch function'
 		);
 		const isolatedDispatch = action => {
 			if(typeof(action) === 'function') {
 				return dispatch((realDispatch, realGetState, ...extra) => {
+					invariant(typeof(realDispatch) === 'function' && typeof(realGetState) === 'function',
+						'dispatch and getState must be functions. Are you trying to execute a thunk without redux-thunk?'
+					);
 					return action(isolatedDispatch, () => isolateState(realGetState(), ownProps), ...extra);
 				});
 			} else {
@@ -28,10 +31,10 @@ export function isolateDispatch(isolateState: Function, isolateAction: Function)
 }
 
 export function isolate(isolateState: Function, isolateAction: Function) {
-	invariant(typeof(isolateState) !== 'function',
+	invariant(typeof(isolateState) === 'function',
 		'The first argument of isolate must be a function that selects an isolated subtree'
 	);
-	invariant(typeof(isolateAction) !== 'function',
+	invariant(typeof(isolateAction) === 'function',
 		'The second argument of isolate must be a function that creates a wrapping action for the isolation reducer'
 	);
 
