@@ -30,10 +30,13 @@
     "redux",
     "reducer",
     "state",
+    "isolate",
     "isolation",
     "sandbox",
     "functional",
-    "elm"
+    "elm",
+    "sub-tree",
+    "cycle"
   ],
   "license": "MIT",
   "devDependencies": {
