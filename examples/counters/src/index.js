@@ -4,9 +4,9 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
-import { isolate } from '../../../src/index';
+import { isolate } from '../../../es/index';
 import { rootReducer as counterRootReducer, App as CounterApp } from './counter';
-import { INCREMENT as COUNTER_INCREMENT, DECREMENT as COUNTER_DECREMENT } from './counter/contants';
+import { INCREMENT as COUNTER_INCREMENT, DECREMENT as COUNTER_DECREMENT } from './counter/constants';
 
 // Set up isolation semantics.
 // We want our counter state trees to mount in state.counters[id],
@@ -73,11 +73,13 @@ const store = createStore(rootReducer, applyMiddleware(
 const rootElement = (
 	<div>
 		<Provider store={store}>
-			<div style={{position: 'absolute', left: 0, top: 0, bottom: 0, right: '50%'}}>
-				<IsolatedCounterApp id='left' />
-			</div>
-			<div style={{position: 'absolute', left: '50%', top: 0, bottom: 0, right: 0}}>
-				<IsolatedCounterApp id='right' />
+			<div>
+				<div style={{position: 'absolute', left: 0, top: 0, bottom: 0, right: '50%'}}>
+					<IsolatedCounterApp id='left' />
+				</div>
+				<div style={{position: 'absolute', left: '50%', top: 0, bottom: 0, right: 0}}>
+					<IsolatedCounterApp id='right' />
+				</div>
 			</div>
 		</Provider>
 	</div>
