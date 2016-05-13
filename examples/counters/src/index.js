@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import thunk from 'redux-thunk';
 
 import { isolate } from '../../../es/index';
@@ -64,10 +64,25 @@ const countersMiddleware = store => next => action => {
 };
 
 // Create store
-const store = createStore(rootReducer, applyMiddleware(
-	thunk,
-	countersMiddleware
-));
+const middleware = [thunk, countersMiddleware];
+const storeEnhancers = [];
+let DevTools = null;
+
+if(process.env.NODE_ENV !== 'production') {
+	// Checks so that we don't accidentally mutate the state
+	const immutableState = require('redux-immutable-state-invariant');
+	middleware.push(immutableState());
+
+	// Dev panel
+	DevTools = require('./devTools').default;
+	storeEnhancers.push(DevTools.instrument());
+	storeEnhancers.push(require('redux-devtools').persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/)));
+}
+const enhancer = compose(
+	applyMiddleware(...middleware),
+	...storeEnhancers
+);
+const store = createStore(rootReducer, enhancer);
 
 // create root element with two counters side by side
 const rootElement = (
@@ -80,6 +95,7 @@ const rootElement = (
 				<div style={{position: 'absolute', left: '50%', top: 0, bottom: 0, right: 0}}>
 					<IsolatedCounterApp id='right' />
 				</div>
+				<DevTools />
 			</div>
 		</Provider>
 	</div>
