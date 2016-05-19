@@ -1,12 +1,16 @@
+import thunk from 'redux-thunk';
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
-import thunk from 'redux-thunk';
 
 import { isolate } from '../../../es/index';
 import { rootReducer as counterRootReducer, App as CounterApp } from './counter';
-import { INCREMENT as COUNTER_INCREMENT, DECREMENT as COUNTER_DECREMENT } from './counter/constants';
+import {
+	INCREMENT as COUNTER_INCREMENT,
+	DECREMENT as COUNTER_DECREMENT
+} from './counter/ActionTypes';
+import App from './AppComponent';
 
 // Set up isolation semantics.
 // We want our counter state trees to mount in state.counters[id],
@@ -53,10 +57,7 @@ const countersMiddleware = store => next => action => {
 			store.dispatch({
 				type: action.type,
 				counterId: 'left',
-				counterAction: {
-					...counterAction,
-					amount: counterAction.amount * 2
-				}
+				counterAction
 			});
 		}
 	}
@@ -74,7 +75,7 @@ if(process.env.NODE_ENV !== 'production') {
 	middleware.push(immutableState());
 
 	// Dev panel
-	DevTools = require('./devTools').default;
+	DevTools = require('./utils/devTools').default;
 	storeEnhancers.push(DevTools.instrument());
 	storeEnhancers.push(require('redux-devtools').persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/)));
 }
@@ -86,18 +87,11 @@ const store = createStore(rootReducer, enhancer);
 
 // create root element with two counters side by side
 const rootElement = (
-	<div>
-		<Provider store={store}>
-			<div>
-				<div style={{position: 'absolute', left: 0, top: 0, bottom: 0, right: '50%'}}>
-					<IsolatedCounterApp id='left' />
-				</div>
-				<div style={{position: 'absolute', left: '50%', top: 0, bottom: 0, right: 0}}>
-					<IsolatedCounterApp id='right' />
-				</div>
-				<DevTools />
-			</div>
-		</Provider>
-	</div>
+	<Provider store={store}>
+		<div>
+			<App counterComponent={IsolatedCounterApp} />
+			<DevTools />
+		</div>
+	</Provider>
 );
 render(rootElement, document.getElementById('root'));

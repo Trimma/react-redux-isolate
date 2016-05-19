@@ -1,0 +1,19 @@
+.container {
+	margin: 20px auto;
+	max-width: 300px;
+	padding: 20px;
+	text-align: center;
+}
+
+.number {
+	margin-bottom: 10px;
+
+	font-size: 64px;
+	font-family: sans-serif;
+	font-weight: bold;
+	color: #666;
+}
+
+.row {
+	margin-bottom: 5px;
+}
