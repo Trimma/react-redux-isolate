@@ -25,15 +25,14 @@ export default class Counter extends Component {
 					{value}
 				</div>
 				<div className={css.row}>
-					<button onClick={onIncrement}>+</button>
+					<button onClick={onIncrement} className={css.button}>+</button>
 					{' '}
-					<button onClick={onDecrement}>-</button>
+					<button onClick={onDecrement} className={css.button}>-</button>
 				</div>
 				<div className={css.row}>
-					<button onClick={onReset}>Reset</button>
-				</div>
-				<div className={css.row}>
-					<button onClick={onRandomize}>Randomize</button>
+					<span onClick={onReset} className={css.link}>Reset</span>
+					{' '}
+					<span onClick={onRandomize} className={css.link}>Randomize</span>
 				</div>
 			</div>
 		);

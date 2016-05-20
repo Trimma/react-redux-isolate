@@ -12,7 +12,7 @@ export default class App extends Component {
 			<div className={css.page}>
 
 				<h1>React Redux Isolate</h1>
-				<h2>Counters example</h2>
+				<h3>Counters example</h3>
 
 				<p>
 					Each counter component is a separate redux app,

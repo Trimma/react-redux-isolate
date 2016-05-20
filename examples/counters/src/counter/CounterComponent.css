@@ -1,19 +1,44 @@
 .container {
-	margin: 20px auto;
-	max-width: 300px;
-	padding: 20px;
+	margin: 30px auto;
+	max-width: 275px;
+	padding: 50px;
 	text-align: center;
+	background: #f5f5f5;
+	border: 1px solid #f8f8f8;
+	border-radius: 5px;
 }
 
 .number {
 	margin-bottom: 10px;
-
-	font-size: 64px;
+	font-size: 74px;
 	font-family: sans-serif;
 	font-weight: bold;
-	color: #666;
+	color: #5C5C65;
 }
 
 .row {
-	margin-bottom: 5px;
+	margin-bottom: 8px;
 }
+
+.button {
+	transition: .3s background;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	background: #fff;
+	font-size: 18px;
+	width: 40px;
+	height: 40px;
+	color: #5C5C65;
+	cursor: pointer;
+}
+
+.button:hover { background: #fbfbfb; }
+
+.link {
+	transition: .3s color;
+	color: #5C5C65;
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.link:hover {	color: #787883; }
