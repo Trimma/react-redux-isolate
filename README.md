@@ -9,6 +9,8 @@ Inspired by [cyclejs/isolate](https://github.com/cyclejs/isolate).
 
 ### Intuition
 
+![state-tree-diagram](https://cloud.githubusercontent.com/assets/1098408/15419337/7e8ef546-1e65-11e6-8ff6-2f7cb1b8e122.png)
+
 The package exposes an `isolate` function that isolates a Redux container, giving it it's own pseudo-store. The sub-app state tree is manually mounted in the root state tree, and information about how the sub-tree is handled is passed into the `isolate` function.
 
 ### Installation
