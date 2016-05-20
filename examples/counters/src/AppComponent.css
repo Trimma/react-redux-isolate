@@ -3,9 +3,10 @@
 }
 
 :global body {
-	background: #ddd;
+	background: #fff;
 	margin: 0;
 	padding: 0;
+	font-family: Calibri;
 }
 
 .page {
@@ -16,8 +17,15 @@
 	padding: 20px;
 
 	background: #fff;
-	border: 1px solid #d3d3d3;
 	border-top: none;
+}
+
+h1 {
+	margin: 0;
+}
+
+h3 {
+	margin: 5px 0px 15px;
 }
 
 .counters {
@@ -39,5 +47,5 @@
 	background: #f5f5f5;
 	color: #666;
 	font-size: 0.9em;
-	border-top: 1px solid #d3d3d3;
+	border-top: 1px solid #dedede;
 }
