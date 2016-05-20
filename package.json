@@ -5,7 +5,7 @@
   "homepage": "https://github.com/Trimma/react-redux-isolate",
   "author": "Trimma AB",
   "publishConfig": {
-    "registry": "http://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org"
   },
   "main": "lib/index.js",
   "jsnext:main": "es/index.js",

@@ -1,7 +1,8 @@
 {
-  "name": "counters",
+  "name": "react-redux-isolate-counters-example",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist",
