@@ -67,16 +67,23 @@ const IsolatedSubApp = isolate(isolateSubAppState, isolateSubAppAction)(Connecte
 
 const subappsReducer = (state = {}, action) => {
 	if(action.type.startsWith(ACTION_PREFIX)) {
+		const currentState = state[action.subAppId] || INITIAL_SUBAPP_STATE;
 		return {
 			...state,
-			[action.subAppId]: subAppReducer(state[action.subAppId], action.subAppAction)
+			[action.subAppId]: subAppReducer(currentState, action.subAppAction)
 		};
 	}
 	return state;
 };
 
 const rootReducer = combineReducers({
-	subapps: subappsReducer
+	subapps: subappsReducer,
+	counter: (state = 0, action) => {
+		if(action.type === 'increment root counter') {
+			return state + 1;
+		}
+		return state;
+	}
 });
 
 const createRootStore = () => createStore(rootReducer, applyMiddleware(thunk));
@@ -156,8 +163,25 @@ describe('react-redux-isolate', () => {
 			stub.props.onDouble();
 			expect(mapStateToPropsCalls).toEqual(2);
 
-			// Important - unrelated actions should not affect subscriptions in an isolated state-tree.
-			store.dispatch({ type: 'unrelated action' });
+			{
+				const stateBefore = store.getState();
+				store.dispatch({ type: 'increment root counter' });
+				expect(store.getState()).toNotBe(stateBefore);
+
+				// Important - unrelated actions should not affect subscriptions in an isolated state-tree.
+				// React-redux's connect() handles this for us
+				expect(mapStateToPropsCalls).toEqual(2);
+			}
+
+			store.dispatch({
+				type: ACTION_PREFIX + 'set',
+				subAppId: 2,
+				subAppAction: {
+					type: 'set', value: 33
+				}
+			});
+			// Test pure dispatch too
+			// connect() is still giving us performance
 			expect(mapStateToPropsCalls).toEqual(2);
 
 			store.dispatch({
