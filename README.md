@@ -4,8 +4,7 @@ Provides a way for multiple react-redux apps to share the same state tree, adher
 without requiring changes to the apps. It enables you to use *sub-apps* inside your redux app, without using multiple stores, and without requiring that you write your sub-apps in a particular manner.
 Inspired by [cyclejs/isolate](https://github.com/cyclejs/isolate).
 
-* Isolate Redux reducers, allowing them to be mounted as a subtree inside a larger state tree.
-* Isolate React components to sandbox their redux connection to the subtree.
+[![build status](https://img.shields.io/travis/Trimma/react-redux-isolate/master.svg?style=flat-square)](https://travis-ci.org/Trimma/react-redux-isolate) [![npm version](https://img.shields.io/npm/v/react-redux-isolate.svg?style=flat-square)](https://www.npmjs.com/package/react-redux-isolate)
 
 ### Intuition
 
