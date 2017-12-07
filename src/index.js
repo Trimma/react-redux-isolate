@@ -1,5 +1,6 @@
 import invariant from 'invariant';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect, Provider } from 'react-redux';
 
 export function isolateDispatch(isolateState: Function, isolateAction: Function) {

@@ -1,6 +1,7 @@
 import expect from 'expect';
-import TestUtils from 'react-addons-test-utils';
-import React, { Component, PropTypes } from 'react';
+import { mount } from 'enzyme';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect, Provider } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
@@ -92,58 +93,56 @@ describe('react-redux-isolate', () => {
 	describe('isolate', () => {
 		it('passes through isolated state', () => {
 			const store = createRootStore();
-			const container = TestUtils.renderIntoDocument(
+			const component = mount(
 				<Provider store={store}>
 					<IsolatedSubApp id={1} />
 				</Provider>
 			);
-			const stub = TestUtils.findRenderedComponentWithType(container, SubApp);
+			const stub = component.find(SubApp);
 
-			expect(stub.props.value).toEqual(1);
-			expect(() =>
-				TestUtils.findRenderedComponentWithType(container, IsolatedSubApp)
-			).toNotThrow();
+			expect(stub.props().value).toEqual(1);
+			expect(component.find(IsolatedSubApp).length).toEqual(1);
 		});
 
 		it('isolates vanilla actions', () => {
 			const store = createRootStore();
-			const container = TestUtils.renderIntoDocument(
+			const component = mount(
 				<Provider store={store}>
 					<IsolatedSubApp id={1} />
 				</Provider>
 			);
-			const stub = TestUtils.findRenderedComponentWithType(container, SubApp);
+			const stub = component.find(SubApp);
 
 			expect(store.getState().subapps[1]).toNotExist();
-			stub.props.onDouble();
+			stub.props().onDouble();
 			expect(store.getState().subapps[1]).toExist();
 			expect(store.getState().subapps[1].value).toEqual(2);
 		});
 
 		it('passes ownProps to sub component', () => {
 			const store = createRootStore();
-			const container = TestUtils.renderIntoDocument(
+			const component = mount(
 				<Provider store={store}>
 					<IsolatedSubApp id={1} initialValue={3} />
 				</Provider>
 			);
-			const stub = TestUtils.findRenderedComponentWithType(container, SubApp);
+			const stub = component.find(SubApp);
 
-			stub.props.onReset();
+			stub.props().onReset();
 			expect(store.getState().subapps[1].value).toEqual(3);
 		});
 
 		it('isolates thunks', () => {
 			const store = createRootStore();
-			const container = TestUtils.renderIntoDocument(
+			const component = mount(
 				<Provider store={store}>
 					<IsolatedSubApp id={1} initialValue={10} />
 				</Provider>
 			);
-			const stub = TestUtils.findRenderedComponentWithType(container, SubApp);
+			const stub = component.find(SubApp);
 
-			stub.props.onReset();
-			stub.props.onRandomize();
+			stub.props().onReset();
+			stub.props().onRandomize();
 			expect(store.getState().subapps[1].value).toNotEqual(10);
 		});
 
@@ -152,15 +151,15 @@ describe('react-redux-isolate', () => {
 			let mapStateToPropsCalls = 0;
 			const mapStateSpy = () => { mapStateToPropsCalls++; };
 
-			const container = TestUtils.renderIntoDocument(
+			const component = mount(
 				<Provider store={store}>
 					<IsolatedSubApp id={1} mapStateSpy={mapStateSpy} />
 				</Provider>
 			);
 			expect(mapStateToPropsCalls).toEqual(1);
 
-			const stub = TestUtils.findRenderedComponentWithType(container, SubApp);
-			stub.props.onDouble();
+			const stub = component.find(SubApp);
+			stub.props().onDouble();
 			expect(mapStateToPropsCalls).toEqual(2);
 
 			{
