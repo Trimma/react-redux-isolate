@@ -83,7 +83,7 @@ export function isolate(isolateState: Function, isolateAction: Function) {
 				};
 			}
 
-			componentWillReceiveProps(props) {
+			UNSAFE_componentWillReceiveProps(props) {
 				if(props.state !== this.lastState) {
 					const { state, dispatch, ...ownProps } = props;
 					this.lastState = props.state;
